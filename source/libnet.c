@@ -20,6 +20,7 @@
 #include <sys/ioctl.h>
 #include <net/if_arp.h>
 #include <arpa/inet.h>
+#include <errno.h>
 
 #include <netlink/route/neighbour.h>
 #include <netlink/route/addr.h>
