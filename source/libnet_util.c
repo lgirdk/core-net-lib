@@ -16,6 +16,8 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
+#include <errno.h>
+
 #include <netlink/route/neighbour.h>
 #include <netlink/route/link.h>
 #include <netlink/route/addr.h>

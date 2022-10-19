@@ -20,6 +20,7 @@
 #include <sys/ioctl.h>
 #include <net/if_arp.h>
 #include <arpa/inet.h>
+#include <errno.h>
 
 #include <netlink/route/neighbour.h>
 #include <netlink/route/addr.h>
@@ -1268,8 +1269,8 @@ libnet_status rule_add(char *args)
                         if (token != NULL) {
                                 if (rtnl_route_read_table_names(
                                             "/etc/iproute2/rt_tables") < 0) {
-                                        CNL_LOG_ERROR("Failed to read %s",
-                                                      "/etc/iproute2/rt_tables\n");
+                                        CNL_LOG_ERROR("Failed to read %s\n",
+                                                      "/etc/iproute2/rt_tables");
                                         goto FREE_RULE;
                                 }
                                 int tableId = rtnl_route_str2table(token);
@@ -1604,7 +1605,7 @@ libnet_status interface_set_flags(char *if_name, unsigned int flags)
         rtnl_link_set_flags(change, flags);
 
         if (rtnl_link_change(sk, link, change, 0) < 0) {
-                CNL_LOG_ERROR("Unable to set flag \n");
+                CNL_LOG_ERROR("Unable to set flag\n");
                 goto FREE_LINK2;
         }
         err = CNL_STATUS_SUCCESS;
