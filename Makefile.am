@@ -15,4 +15,9 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 #
-SUBDIRS = source test
+
+SUBDIRS = source
+
+if WITH_GTEST_SUPPORT
+SUBDIRS += test
+endif

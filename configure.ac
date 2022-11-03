@@ -28,6 +28,22 @@ AM_INIT_AUTOMAKE([subdir-objects foreign no-dist-gzip dist-bzip2 1.9])
 LT_INIT([enable-shared])
 AC_LANG([C++])
 
+GTEST_ENABLE_FLAG = ""
+
+AC_ARG_ENABLE([gtestapp],
+             AS_HELP_STRING([--enable-gtestapp],[enable Gtest support (default is no)]),
+             [
+               case "${enableval}" in
+                yes) GTEST_SUPPORT_ENABLED=true
+                     GTEST_ENABLE_FLAG="-DGTEST_ENABLE"
+                     m4_if(m4_sysval,[0],[AC_CONFIG_FILES([test/Makefile])]);;
+                no) GTEST_SUPPORT_ENABLED=false AC_MSG_ERROR([Gtest support is disabled]);;
+                 *) AC_MSG_ERROR([bad value ${enableval} for --enable-gtestapp ]);;
+               esac
+             ],
+             [echo "Gtestapp is disabled"])
+AM_CONDITIONAL([WITH_GTEST_SUPPORT], [test x$GTEST_SUPPORT_ENABLED = xtrue])
+
 m4_ifdef([AM_SILENT_RULES],[AM_SILENT_RULES([yes])],
 [AM_DEFAULT_VERBOSITY=1
 AC_SUBST(AM_DEFAULT_VERBOSITY)])
@@ -42,7 +58,6 @@ AC_CHECK_HEADERS([stdlib.h unistd.h])
 #PKG_CHECK_MODULES([GLIB], [glib-2.0 >= 2.24.0])
 
 AC_CONFIG_FILES([Makefile
-		source/Makefile
-		test/Makefile])
+		source/Makefile])
 
 AC_OUTPUT
