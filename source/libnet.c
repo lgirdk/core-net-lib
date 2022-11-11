@@ -1284,6 +1284,13 @@ libnet_status rule_add(char *args)
                                 CNL_LOG_ERROR("'table/lookup' option not provided\n");
                                 goto FREE_RULE;
                         }
+                } else if (0 == strcmp(token, "prio")) {
+                        token = strtok(NULL, " ");
+                        if (token != NULL) {
+                                rtnl_rule_set_prio(rule, atoi(token));
+                        } else {
+                                CNL_LOG_ERROR("'priority' option not provided\n");
+                        }
                 } else if(0 == strcmp(token, "-4") || 0 == strcmp(token, "4") ||
                           0 == strcmp(token, "inet")) {
                         family = AF_INET;
