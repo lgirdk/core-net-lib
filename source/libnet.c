@@ -1323,7 +1323,11 @@ libnet_status rule_add(char *args)
                                             "/etc/iproute2/rt_tables") < 0) {
                                         CNL_LOG_ERROR("Failed to read %s\n",
                                                       "/etc/iproute2/rt_tables");
-                                        goto FREE_RULE;
+                                }
+                                if (rtnl_route_read_table_names(
+                                            "/etc/iproute2/rt_tables.d/rdkb.conf") < 0) {
+                                        CNL_LOG_ERROR("Failed to read %s\n",
+                                                      "/etc/iproute2/rt_tables.d/rdkb.conf");
                                 }
                                 int tableId = rtnl_route_str2table(token);
                                 if (tableId < 0) {
