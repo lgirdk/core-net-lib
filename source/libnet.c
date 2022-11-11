@@ -1275,6 +1275,15 @@ libnet_status rule_add(char *args)
                                 }
                                 int tableId = rtnl_route_str2table(token);
                                 if (tableId < 0) {
+                                        if (rtnl_route_read_table_names(
+                                                    "/etc/iproute2/rt_tables.d/rdkb.conf") < 0) {
+                                            CNL_LOG_ERROR("Failed to read %s\n",
+                                                          "/etc/iproute2/rt_tables.d/rdkb.conf");
+                                        } else {
+                                            tableId = rtnl_route_str2table(token);
+                                        }
+                                }
+                                if (tableId < 0) {
                                         CNL_LOG_ERROR("No such table %s\n", token);
                                         goto FREE_RULE;
                                 }
