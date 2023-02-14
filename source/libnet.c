@@ -775,7 +775,7 @@ libnet_status addr_derive_broadcast(char *ip, unsigned int prefix_len, char *bca
 
         if (inet_pton(AF_INET, ip, &inaddr) < 1)
                 return CNL_STATUS_FAILURE;
-        inaddr.s_addr |= ~(~0U << (32U - prefix_len));
+        inaddr.s_addr |= htonl(~(~0U << (32U - prefix_len)));
         inet_ntop(AF_INET, &inaddr, bcast, size);
         return CNL_STATUS_SUCCESS;
 }
