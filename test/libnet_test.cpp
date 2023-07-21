@@ -18,6 +18,7 @@
 #include <iostream>
 #include <string>
 
+#include <algorithm>
 #include <gtest/gtest.h>
 
 #include "TestUtils.hpp"
