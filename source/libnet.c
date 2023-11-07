@@ -1129,6 +1129,9 @@ libnet_status route_delete(char *args)
         struct nl_cache *route_cache;
         struct rtnl_route *route;
         libnet_status err = CNL_STATUS_FAILURE;
+        char *str = strdup(args);
+        char *token;
+        char nexthop[64]={0};
 
         sock = libnet_alloc_socket();
         if (sock == NULL) {
@@ -1144,21 +1147,70 @@ libnet_status route_delete(char *args)
         route_cache = libnet_route_alloc_cache(sock, 0);
         route = libnet_route_alloc();
 
-        if(0 == strcmp(args, "default")) {
-                if (libnet_route_parse_dst(route, args) != 0) {
-                        CNL_LOG_ERROR("Unable to parse dst field\n");
-                        goto FREE_ROUTE;
+        token = strtok(str, " ");
+        while( token != NULL) {
+                if(0 == strcmp(token, "default")) {
+                        if (libnet_route_parse_dst(route, token) != 0) {
+                                CNL_LOG_ERROR("%s: Unable to parse dst field\n", args);
+                                goto FREE_ROUTE;
+                        }
+                } else if(0 == strcmp(token, "dev")) {
+                        token = strtok(NULL, " ");
+                        if (token != NULL) {
+                                strcat(nexthop,"dev=");
+                                strcat(nexthop,token);
+                                strcat(nexthop,",");
+                        }
+                } else if(0 == strcmp(token, "via")) {
+                        token = strtok(NULL, " ");
+                        if (token != NULL) {
+                                strcat(nexthop,"via=");
+                                strcat(nexthop,token);
+                                strcat(nexthop,",");
+                        }
+                } else if(0 == strcmp(token, "metric")) {
+                        token = strtok(NULL, " ");
+                        if (token != NULL) {
+                                strcat(nexthop,"metric=");
+                                strcat(nexthop,token);
+                                strcat(nexthop,",");
+                        }
+                } else if(0 == strcmp(token, "table")) {
+                        token = strtok(NULL, " ");
+                        if (token != NULL) {
+                                if (libnet_route_parse_table(route, token) != 0) {
+                                        CNL_LOG_ERROR("%s: Unable to parse table field\n", args);
+                                        goto FREE_ROUTE;
+                                }
+                        }
+                } else if(0 == strcmp(token, "-4") || 0 == strcmp(token, "4") ||
+                          0 == strcmp(token, "inet")) {
+                        if (rtnl_route_set_family(route, AF_INET) < 0) {
+                                CNL_LOG_ERROR("%s: Unable to set V4 addr\n", args);
+                                goto FREE_ROUTE;
+                        }
+                } else if(0 == strcmp(token, "-6") || 0 == strcmp(token, "6") ||
+                          0 == strcmp(token, "inet6")) {
+                        if (rtnl_route_set_family(route, AF_INET6) < 0) {
+                                CNL_LOG_ERROR("%s: Unable to set V6 addr\n", args);
+                                goto FREE_ROUTE;
+                        }
+                } else {
+                        if (libnet_route_parse_dst(route, token) != 0) {
+                                CNL_LOG_ERROR("%s: Unable to parse dst field\n", args);
+                                goto FREE_ROUTE;
+                        }
                 }
-
-                nl_cache_foreach_filter(route_cache, OBJ_CAST(route), route_delete_cb,
-                                        (void *)sock);
+                token = strtok(NULL, " ");
         }
+        nl_cache_foreach_filter(route_cache, OBJ_CAST(route), route_delete_cb, (void *)sock);
         err = CNL_STATUS_SUCCESS;
 FREE_ROUTE:
         nl_cache_free(route_cache);
         rtnl_route_put(route);
 FREE_SOCKET:
         nl_socket_free(sock);
+        free(str);
 
         return err;
 }
