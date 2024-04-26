@@ -27,8 +27,6 @@ libnet_gtest_bin_CPPFLAGS = -I$(PKG_CONFIG_SYSROOT_DIR)$(includedir)/gtest \
                             -I${top_srcdir}/gtest/include \
                             -I${top_srcdir}/source \
                             -I${top_srcdir}/source/include \
-                            -I$(PKG_CONFIG_SYSROOT_DIR)$(includedir)/dbus-1.0 \
-                            -I$(PKG_CONFIG_SYSROOT_DIR)$(libdir)/dbus-1.0/include \
                             -I$(PKG_CONFIG_SYSROOT_DIR)$(includedir)/ccsp
 
 libnet_gtest_bin_SOURCES = libnet_test.cpp gtest_main.cpp TestEnvironment.hpp TestUtils.cpp TestUtils.hpp
